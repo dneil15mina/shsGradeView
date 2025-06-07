@@ -1,0 +1,22 @@
+# Disable directory listing
+Options -Indexes
+
+# Prevent access to sensitive files
+<FilesMatch "\.(env|log|htaccess|sql)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Redirect all requests to index.php
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L]
+
+# Security headers
+<IfModule mod_headers.c>
+    Header set X-XSS-Protection "1; mode=block"
+    Header always append X-Frame-Options SAMEORIGIN
+    Header set X-Content-Type-Options nosniff
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

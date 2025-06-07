@@ -5,11 +5,13 @@ requireRole('teacher');
 // Get teacher's assigned classes
 $teacherId = $_SESSION['user_id'];
 $stmt = $pdo->prepare("
-    SELECT c.class_id, sub.subject_name, gl.level_name, s.section_name, c.school_year, c.semester
+    SELECT c.class_id, sub.subject_name, 
+           s.section_name,
+           c.school_year, c.semester
     FROM classes c
     JOIN subjects sub ON c.subject_id = sub.subject_id
     JOIN sections s ON c.section_id = s.section_id
-    JOIN grade_levels gl ON s.level_id = gl.level_id
+    JOIN grade_levels g ON s.level_id = g.level_id
     WHERE c.teacher_id = ?
 ");
 $stmt->execute([$teacherId]);
@@ -44,7 +46,6 @@ $classes = $stmt->fetchAll();
                 <thead>
                     <tr>
                         <th>Subject</th>
-                        <th>Grade Level</th>
                         <th>Section</th>
                         <th>School Year</th>
                         <th>Semester</th>
@@ -55,7 +56,6 @@ $classes = $stmt->fetchAll();
                     <?php foreach ($classes as $class): ?>
                         <tr>
                             <td><?= htmlspecialchars($class['subject_name']) ?></td>
-                            <td><?= htmlspecialchars($class['level_name']) ?></td>
                             <td><?= htmlspecialchars($class['section_name']) ?></td>
                             <td><?= htmlspecialchars($class['school_year']) ?></td>
                             <td><?= htmlspecialchars(ucfirst($class['semester'])) ?></td>

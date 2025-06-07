@@ -19,11 +19,11 @@ if ($stmt->fetchColumn() === 0) {
 
 // Get class info
 $stmt = $pdo->prepare("
-    SELECT sub.subject_name, gl.level_name, s.section_name
+    SELECT sub.subject_name, COALESCE(gl.level_name, '') AS level_name, s.section_name
     FROM classes c
     JOIN subjects sub ON c.subject_id = sub.subject_id
     JOIN sections s ON c.section_id = s.section_id
-    JOIN grade_levels gl ON s.level_id = gl.level_id
+    LEFT JOIN grade_levels gl ON s.level_id = gl.level_id
     WHERE c.class_id = ?
 ");
 $stmt->execute([$classId]);
@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php include 'dashboard.php'; ?>
     
     <div class="content">
-        <h3>Grade Management: <?= htmlspecialchars($class['subject_name']) ?> (<?= htmlspecialchars($class['level_name']) ?>-<?= htmlspecialchars($class['section_name']) ?>)</h3>
+        <h3>Grade Management: <?= htmlspecialchars($class['subject_name']) ?> (<?= htmlspecialchars($class['level_name'] ?? '') ?>-<?= htmlspecialchars($class['section_name']) ?>)</h3>
         
         <?php if (isset($success)): ?>
             <div class="success"><?= $success ?></div>
@@ -170,8 +170,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </tbody>
             </table>
             
-            <button type="submit" class="btn">Save Grades</button>
-            <a href="classes.php" class="btn" style="background: #6c757d;">Back to Classes</a>
+            <div class="d-flex gap-3 mt-3">
+                <button type="submit" class="btn btn-success px-4 py-2">
+                    <i class="bi bi-save"></i> Save Grades
+                </button>
+                <a href="classes.php" class="btn btn-secondary px-4 py-2">
+                    <i class="bi bi-arrow-left"></i> Back to Classes
+                </a>
+            </div>
         </form>
     </div>
 </body>

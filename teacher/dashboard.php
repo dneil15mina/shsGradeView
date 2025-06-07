@@ -43,8 +43,39 @@ requireRole('teacher');
                     <div class="card-body">
                         <p>Welcome to your teacher portal. Use the menu to manage your classes and student grades.</p>
                         
+                        <?php
+                        // Get current teacher's assigned classes
+                        $teacherId = $_SESSION['user_id'];
+                        $stmt = $pdo->prepare("
+                            SELECT c.class_id, sub.subject_name, 
+                                   CONCAT(gl.level_name, ' - ', s.section_name) AS section_name,
+                                   c.school_year, c.semester
+                            FROM classes c
+                            JOIN subjects sub ON c.subject_id = sub.subject_id
+                            JOIN sections s ON c.section_id = s.section_id
+                            JOIN grade_levels gl ON s.level_id = gl.level_id
+                            WHERE c.teacher_id = ?
+                            ORDER BY c.school_year DESC, c.semester
+                        ");
+                        $stmt->execute([$teacherId]);
+                        $classes = $stmt->fetchAll();
+                        
+                        if (!empty($classes)) {
+                            $message = "<div>You are assigned to these classes:</div>";
+                            $message .= "<ul class='list-group mt-2'>";
+                            foreach ($classes as $class) {
+                                $message .= "<li class='list-group-item'>";
+                                $message .= htmlspecialchars($class['subject_name']) . " - ";
+                                $message .= htmlspecialchars($class['section_name']);
+                                $message .= "</li>";
+                            }
+                            $message .= "</ul>";
+                        } else {
+                            $message = "You currently have no class assignments this year.";
+                        }
+                        ?>
                         <div class="alert alert-info">
-                            <i class="bi bi-info-circle"></i> You have 0 classes assigned this semester.
+                            <i class="bi bi-info-circle"></i> <?= $message ?>
                         </div>
                     </div>
                 </div>
