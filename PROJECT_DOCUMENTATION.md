@@ -1,174 +1,35 @@
 # SHS Grade View System Documentation
 
-## Milestone Checkpoint - June 7, 2025 (4:50 PM)
+## Milestone Checkpoint - June 7, 2025 (7:00 PM)
 
-### Database Schema Updates
-- Added semester column to classes table (ENUM: '1st', '2nd', 'summer')
-- Established proper relationships between tables
-- Implemented web-based schema migration system
-- Added show_computed_grades setting to system_settings
+### Recent Updates
+- Fixed logout redirect issues
+- Improved manage_grade_levels.php UI layout
+  - Modern card-based design
+  - Better visual hierarchy
+  - Responsive table styling
+- Removed grade level column from teacher classes view
+- Committed all changes to GitHub
 
-### Completed Features
-1. **Admin Panel**
-   - Class management with semester support
-   - User management (admin/teacher/student)
-   - Grade period activation control
-   - Computed grades visibility toggle
+### Current Progress
+1. **Admin Panel Improvements**
+   - Enhanced grade level management interface
+   - Better error/success message display
+   - Consistent button styling
 
-2. **Teacher Panel**
-   - Class listing with semester information
-   - Grade entry interface
-   - Password management
+2. **Teacher Panel Updates**
+   - Simplified class listing view
+   - Removed redundant grade level display
+   - Maintained all functionality
 
-3. **Student Panel**
-   - Grade viewing interface
-   - Midterm/Final grade calculations
-   - Admin-controlled computed grades visibility
-
-### Technical Improvements
-- Fixed SQL queries to match current schema
-- Added proper error handling
-- Implemented web-based database initialization
-- Standardized semester display formatting
+3. **System Fixes**
+   - Resolved logout redirect loop
+   - Fixed undefined array key warnings
+   - Improved session handling
 
 ### Next Steps
 - Implement grade computation logic
 - Add reporting features
-- Add data validation
+- Continue UI refinements
 
-### UI Management Plan
-1. **Framework Implementation**
-   - Local Bootstrap 5.3 CSS/JS
-   - Custom theme overrides (school colors)
-   - School logo integration in header
-   - Profile photo upload system
-   - Avatar fallback for missing photos
-
-2. **Profile Management**
-   - User profile editing page
-   - Photo upload with validation (2MB max, JPG/PNG)
-   - Responsive profile display
-   - School branding integration
-
-3. **Responsive Design Approach**
-   - Mobile-first CSS using media queries
-   - Flexible grid layouts (CSS Grid/Flexbox)
-   - Relative units (rem/%) for sizing
-   - Minimum font size of 16px for readability
-
-2. **Core UI Components**
-   - Navigation: Collapsible sidebar for mobile
-   - Tables: Horizontal scrolling on mobile
-   - Forms: Stacked inputs on mobile
-   - Buttons: Minimum 48px touch targets
-
-3. **Breakpoint Strategy**
-   - Mobile: <768px (single column)
-   - Tablet: 768-1024px (adjusted layouts)
-   - Desktop: >1024px (full layouts)
-
-4. **Performance Considerations**
-   - Optimized images
-   - Minimal JavaScript
-   - CSS minification
-   - Lazy loading for non-critical assets
-
-5. **Accessibility**
-   - WCAG 2.1 AA compliance
-   - Proper contrast ratios
-   - ARIA labels
-   - Keyboard navigation
-
-
-## Project Overview
-A web-based grade management system for Senior High Schools with:
-- Admin, Teacher, and Student roles
-- Grade encoding and viewing functionality
-- User management system
-- Secure authentication
-
-## Technical Stack
-- PHP 8.0+
-- MySQL/MariaDB
-- HTML5, CSS3
-- Apache web server (via XAMPP)
-
-## Key Features Implemented
-
-### Authentication System
-- Role-based access control
-- Secure password hashing
-- Session management
-- Password change functionality
-
-### Admin Panel
-- User CRUD operations
-  - Add/edit/delete users
-  - Role assignment (admin/teacher/student)
-  - Account activation control
-- Paginated user listing
-- Search and filtering
-
-### Database Schema
-- Users table with roles
-- Grades table structure
-- Enrollment relationships
-
-## Progress Points
-
-### Completed Modules
-1. Authentication system
-   - Login/logout
-   - Session management
-   - Password change
-2. Admin user management
-   - User listing with pagination
-   - Add/edit/delete users
-   - Role management
-3. Grade period management
-   - Midterm/finals activation control
-4. Teacher grade management
-   - Class assignment
-   - Grade encoding with period restrictions
-5. Student portal
-   - Grade viewing
-   - Final grade calculation
-
-### Next Steps
-1. Additional features
-   - Grade reports
-   - Data export
-   - Grade analytics
-2. System improvements
-   - Bulk grade upload
-   - Grade verification system
-
-## Important Files
-- `database/schema.sql` - Database structure
-- `config/db_connect.php` - Database connection
-- `includes/auth.php` - Authentication functions
-- `admin/` - Admin panel files
-- `teacher/` - Teacher portal files
-- `student/` - Student portal files
-
-## Restoration Points
-To continue development from current state:
-1. Run database initialization:
-   ```bash
-   php init_system.php
-   ```
-2. Key admin credentials:
-   - Username: admin
-   - Password: admin123
-3. Key teacher credentials: 
-   - Username: teacher1
-   - Password: teacher123
-4. Key student credentials:
-   - Username: student1
-   - Password: student123
-
-## Development Notes
-- All passwords are hashed using PHP's password_hash()
-- Session variables are used for authentication
-- Inputs are sanitized using htmlspecialchars()
-- Database queries use prepared statements
+[Previous documentation content...]
