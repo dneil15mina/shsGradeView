@@ -6,35 +6,52 @@ requireRole('teacher');
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Teacher Dashboard</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        .header { background: #333; color: white; padding: 15px; display: flex; justify-content: space-between; }
-        .sidebar { width: 200px; background: #f4f4f4; height: 100vh; float: left; }
-        .content { margin-left: 200px; padding: 20px; }
-        .menu-item { padding: 10px 15px; border-bottom: 1px solid #ddd; }
-        .menu-item:hover { background: #ddd; }
-        .menu-item a { text-decoration: none; color: #333; display: block; }
-    </style>
+    <link rel="icon" href="../assets/images/school-logo.png" type="image/png">
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
-    <div class="header">
-        <h2>Teacher Dashboard</h2>
-        <div>
-            <span>Welcome, <?= htmlspecialchars($_SESSION['username']) ?></span>
-            <a href="../logout.php" style="color: white; margin-left: 15px;">Logout</a>
+    <?php include '../includes/navbar.php'; ?>
+    
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header">
+                        Teacher Menu
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="classes.php" class="list-group-item list-group-item-action">
+                            <i class="bi bi-journal-bookmark"></i> My Classes
+                        </a>
+                        <a href="grades.php" class="list-group-item list-group-item-action">
+                            <i class="bi bi-pencil-square"></i> Enter Grades
+                        </a>
+                        <a href="../password_change.php" class="list-group-item list-group-item-action">
+                            <i class="bi bi-shield-lock"></i> Change Password
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Teaching Overview</h4>
+                    </div>
+                    <div class="card-body">
+                        <p>Welcome to your teacher portal. Use the menu to manage your classes and student grades.</p>
+                        
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> You have 0 classes assigned this semester.
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    
-    <div class="sidebar">
-        <div class="menu-item"><a href="classes.php">My Classes</a></div>
-        <div class="menu-item"><a href="grades.php">Enter Grades</a></div>
-        <div class="menu-item"><a href="password.php">Change Password</a></div>
-    </div>
-    
-    <div class="content">
-        <h3>Teaching Overview</h3>
-        <p>Welcome to your teacher portal. Use the menu to manage your classes and student grades.</p>
-    </div>
+
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

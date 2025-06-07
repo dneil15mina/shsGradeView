@@ -6,43 +6,75 @@ requireRole('admin');
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Dashboard</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        .header { background: #333; color: white; padding: 15px; display: flex; justify-content: space-between; }
-        .sidebar { width: 200px; background: #f4f4f4; height: 100vh; float: left; }
-        .content { margin-left: 200px; padding: 20px; }
-        .menu-item { padding: 10px 15px; border-bottom: 1px solid #ddd; }
-        .menu-item:hover { background: #ddd; }
-        .menu-item a { text-decoration: none; color: #333; display: block; }
-    </style>
+    <link rel="icon" href="../assets/images/school-logo.png" type="image/png">
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
-    <div class="header">
-        <h2>Admin Dashboard</h2>
-        <div class="admin-links" style="margin: 15px 0;">
-            <a href="manage_grade_levels.php" class="btn">Manage Grade Levels</a>
-            <a href="manage_sections.php" class="btn">Manage Sections</a>
-            <a href="manage_subjects.php" class="btn">Manage Subjects</a>
-            <a href="add_class.php" class="btn">Add Class</a>
-            <a href="grade_periods.php" class="btn">Grade Periods</a>
-        </div>
-        <div>
-            <span>Welcome, <?= htmlspecialchars($_SESSION['username']) ?></span>
-            <a href="../logout.php" style="color: white; margin-left: 15px;">Logout</a>
-        </div>
-    </div>
+    <?php include '../includes/navbar.php'; ?>
     
-    <div class="sidebar">
-        <div class="menu-item"><a href="users.php">Manage Users</a></div>
-        <div class="menu-item"><a href="classes.php">Manage Classes</a></div>
-        <div class="menu-item"><a href="grades.php">Grade Settings</a></div>
-        <div class="menu-item"><a href="reports.php">Reports</a></div>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header">
+                        Admin Menu
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="users.php" class="list-group-item list-group-item-action">
+                            <i class="bi bi-people"></i> Manage Users
+                        </a>
+                        <a href="classes.php" class="list-group-item list-group-item-action">
+                            <i class="bi bi-journal-bookmark"></i> Manage Classes
+                        </a>
+                        <a href="reports.php" class="list-group-item list-group-item-action">
+                            <i class="bi bi-graph-up"></i> Reports
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>System Overview</h4>
+                    </div>
+                    <div class="card-body">
+                        <p>Welcome to the administration panel. Use the menu to manage different aspects of the system.</p>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-4 mb-3">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body text-center">
+                                        <h5><i class="bi bi-people"></i> Users</h5>
+                                        <h3>0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body text-center">
+                                        <h5><i class="bi bi-journal-bookmark"></i> Classes</h5>
+                                        <h3>0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card bg-info text-white">
+                                    <div class="card-body text-center">
+                                        <h5><i class="bi bi-mortarboard"></i> Students</h5>
+                                        <h3>0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    
-    <div class="content">
-        <h3>System Overview</h3>
-        <p>Welcome to the administration panel. Use the menu to manage different aspects of the system.</p>
-    </div>
+
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
