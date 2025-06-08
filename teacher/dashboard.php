@@ -26,9 +26,6 @@ requireRole('teacher');
                         <a href="classes.php" class="list-group-item list-group-item-action">
                             <i class="bi bi-journal-bookmark"></i> My Classes
                         </a>
-                        <a href="grades.php" class="list-group-item list-group-item-action">
-                            <i class="bi bi-pencil-square"></i> Enter Grades
-                        </a>
                         <a href="profile.php" class="list-group-item list-group-item-action">
                             <i class="bi bi-person"></i> My Profile
                         </a>
