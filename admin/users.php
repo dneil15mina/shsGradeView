@@ -47,92 +47,126 @@ $users = $stmt->fetchAll();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Manage Users</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        .header { background: #333; color: white; padding: 15px; }
-        .content { padding: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .pagination { margin-top: 20px; }
-        .search-form { margin-bottom: 20px; }
-        .btn { padding: 5px 10px; text-decoration: none; border-radius: 3px; }
-        .btn-primary { background: #337ab7; color: white; }
-        .btn-danger { background: #d9534f; color: white; }
-    </style>
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
     <?php include 'dashboard.php'; ?>
     
-    <div class="content">
-        <h3>Manage Users</h3>
-        
-        <?php if (isset($_SESSION['error'])): ?>
-            <div class="error"><?= htmlspecialchars($_SESSION['error']) ?></div>
-            <?php unset($_SESSION['error']); ?>
-        <?php endif; ?>
-        
-        <?php if (isset($_SESSION['success'])): ?>
-            <div class="success"><?= htmlspecialchars($_SESSION['success']) ?></div>
-            <?php unset($_SESSION['success']); ?>
-        <?php endif; ?>
-        
-        <div class="search-form">
-            <form method="GET">
-                <input type="text" name="search" placeholder="Search users..." value="<?= htmlspecialchars($search) ?>">
-                <select name="role">
-                    <option value="">All Roles</option>
-                    <option value="admin" <?= $roleFilter === 'admin' ? 'selected' : '' ?>>Admin</option>
-                    <option value="teacher" <?= $roleFilter === 'teacher' ? 'selected' : '' ?>>Teacher</option>
-                    <option value="student" <?= $roleFilter === 'student' ? 'selected' : '' ?>>Student</option>
-                </select>
-                <button type="submit">Filter</button>
-                <a href="users.php" class="btn">Reset</a>
-            </form>
+    <div class="container mt-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Manage Users</h4>
+            </div>
+            <div class="card-body">
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="alert alert-danger"><?= htmlspecialchars($_SESSION['error']) ?></div>
+                    <?php unset($_SESSION['error']); ?>
+                <?php endif; ?>
+                
+                <?php if (isset($_SESSION['success'])): ?>
+                    <div class="alert alert-success"><?= htmlspecialchars($_SESSION['success']) ?></div>
+                    <?php unset($_SESSION['success']); ?>
+                <?php endif; ?>
+                
+                <form method="GET" class="row g-3 mb-4">
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" name="search" placeholder="Search users..." 
+                               value="<?= htmlspecialchars($search) ?>">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" name="role">
+                            <option value="">All Roles</option>
+                            <option value="admin" <?= $roleFilter === 'admin' ? 'selected' : '' ?>>Admin</option>
+                            <option value="teacher" <?= $roleFilter === 'teacher' ? 'selected' : '' ?>>Teacher</option>
+                            <option value="student" <?= $roleFilter === 'student' ? 'selected' : '' ?>>Student</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="bi bi-funnel"></i> Filter
+                        </button>
+                        <a href="users.php" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-counterclockwise"></i> Reset
+                        </a>
+                    </div>
+                </form>
+                
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($users as $user): ?>
+                                <tr>
+                                    <td><?= $user['user_id'] ?></td>
+                                    <td><?= htmlspecialchars($user['username']) ?></td>
+                                    <td><?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?></td>
+                                    <td><?= ucfirst($user['role']) ?></td>
+                                    <td>
+                                        <span class="badge bg-<?= $user['is_active'] ? 'success' : 'secondary' ?>">
+                                            <?= $user['is_active'] ? 'Active' : 'Inactive' ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="edit_user.php?id=<?= $user['user_id'] ?>" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                        <a href="delete_user.php?id=<?= $user['user_id'] ?>" 
+                                           class="btn btn-sm btn-danger" 
+                                           onclick="return confirm('Are you sure you want to delete this user?')">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div>
+                        <?php if ($page > 1): ?>
+                            <a href="?page=<?= $page - 1 ?>&search=<?= urlencode($search) ?>&role=<?= urlencode($roleFilter) ?>" 
+                               class="btn btn-outline-primary">
+                                <i class="bi bi-chevron-left"></i> Previous
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <div class="text-muted">
+                        Page <?= $page ?> of <?= ceil($totalUsers / $limit) ?>
+                    </div>
+                    
+                    <div>
+                        <?php if ($page * $limit < $totalUsers): ?>
+                            <a href="?page=<?= $page + 1 ?>&search=<?= urlencode($search) ?>&role=<?= urlencode($roleFilter) ?>" 
+                               class="btn btn-outline-primary">
+                                Next <i class="bi bi-chevron-right"></i>
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <a href="add_user.php" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Add New User
+                    </a>
+                </div>
+            </div>
         </div>
-        
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Username</th>
-                    <th>Name</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($users as $user): ?>
-                    <tr>
-                        <td><?= $user['user_id'] ?></td>
-                        <td><?= htmlspecialchars($user['username']) ?></td>
-                        <td><?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?></td>
-                        <td><?= ucfirst($user['role']) ?></td>
-                        <td><?= $user['is_active'] ? 'Active' : 'Inactive' ?></td>
-                        <td>
-                            <a href="edit_user.php?id=<?= $user['user_id'] ?>" class="btn btn-primary">Edit</a>
-                            <a href="delete_user.php?id=<?= $user['user_id'] ?>" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-        
-        <div class="pagination">
-            <?php if ($page > 1): ?>
-                <a href="?page=<?= $page - 1 ?>&search=<?= urlencode($search) ?>&role=<?= urlencode($roleFilter) ?>">&laquo; Previous</a>
-            <?php endif; ?>
-            
-            <span>Page <?= $page ?> of <?= ceil($totalUsers / $limit) ?></span>
-            
-            <?php if ($page * $limit < $totalUsers): ?>
-                <a href="?page=<?= $page + 1 ?>&search=<?= urlencode($search) ?>&role=<?= urlencode($roleFilter) ?>">Next &raquo;</a>
-            <?php endif; ?>
-        </div>
-        
-        <a href="add_user.php" class="btn btn-primary">Add New User</a>
     </div>
+
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
