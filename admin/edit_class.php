@@ -5,6 +5,8 @@ requireRole('admin');
 
 $errors = [];
 $success = '';
+$isEdit = isset($_GET['id']);
+$classData = [];
 
 // Get available options
 $subjects = $pdo->query("SELECT subject_id, subject_name FROM subjects")->fetchAll();
@@ -13,12 +15,23 @@ $sections = $pdo->query("SELECT section_id, level_name, section_name
 $teachers = $pdo->query("SELECT user_id, first_name, last_name 
                         FROM users WHERE role = 'teacher' AND is_active = 1")->fetchAll();
 
+// Load class data if editing
+if ($isEdit && !isset($_POST['subject_id'])) {
+    $stmt = $pdo->prepare("
+        SELECT subject_id, section_id, teacher_id, school_year, semester
+        FROM classes WHERE class_id = ?
+    ");
+    $stmt->execute([$_GET['id']]);
+    $classData = $stmt->fetch();
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $subjectId = $_POST['subject_id'] ?? '';
     $sectionId = $_POST['section_id'] ?? '';
     $teacherId = $_POST['teacher_id'] ?? '';
     $schoolYear = $_POST['school_year'] ?? '';
     $semester = $_POST['semester'] ?? '';
+    $classId = $_POST['class_id'] ?? null;
 
     // Validate inputs
     if (empty($subjectId) || empty($sectionId) || empty($teacherId) || 
@@ -30,20 +43,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
             
-            $stmt = $pdo->prepare("
-                INSERT INTO classes (subject_id, section_id, teacher_id, school_year, semester)
-                VALUES (?, ?, ?, ?, ?)
-            ");
-            $stmt->execute([$subjectId, $sectionId, $teacherId, $schoolYear, $semester]);
+            if ($isEdit) {
+                $stmt = $pdo->prepare("
+                    UPDATE classes 
+                    SET subject_id = ?, section_id = ?, teacher_id = ?, 
+                        school_year = ?, semester = ?
+                    WHERE class_id = ?
+                ");
+                $stmt->execute([$subjectId, $sectionId, $teacherId, $schoolYear, $semester, $classId]);
+                $success = 'Class updated successfully!';
+            } else {
+                $stmt = $pdo->prepare("
+                    INSERT INTO classes (subject_id, section_id, teacher_id, school_year, semester)
+                    VALUES (?, ?, ?, ?, ?)
+                ");
+                $stmt->execute([$subjectId, $sectionId, $teacherId, $schoolYear, $semester]);
+                $success = 'Class added successfully!';
+            }
             
             $pdo->commit();
-            $success = 'Class added successfully!';
         } catch (PDOException $e) {
             $pdo->rollBack();
             if ($e->errorInfo[1] == 1062) {
                 $errors[] = 'This class already exists for the selected section, school year and semester';
             } else {
-                $errors[] = 'Failed to add class: ' . $e->getMessage();
+                $errors[] = 'Failed to ' . ($isEdit ? 'update' : 'add') . ' class: ' . $e->getMessage();
             }
         }
     }
@@ -55,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Add New Class</title>
+    <title><?= $isEdit ? 'Edit Class' : 'Add New Class' ?></title>
     <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
@@ -65,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="container mt-4">
         <div class="card shadow">
             <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">Add New Class</h4>
+                <h4 class="mb-0"><?= $isEdit ? 'Edit Class' : 'Add New Class' ?></h4>
             </div>
             <div class="card-body">
                 <?php if (!empty($errors)): ?>
@@ -87,7 +111,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <select class="form-select" name="subject_id" required>
                                 <option value="">Select Subject</option>
                                 <?php foreach ($subjects as $subject): ?>
-                                    <option value="<?= $subject['subject_id'] ?>">
+                                    <option value="<?= $subject['subject_id'] ?>" 
+                                        <?= ($isEdit && isset($classData['subject_id']) && $classData['subject_id'] == $subject['subject_id']) ? 'selected' : '' ?>>
                                         <?= htmlspecialchars($subject['subject_name']) ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -99,7 +124,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <select class="form-select" name="section_id" required>
                                 <option value="">Select Section</option>
                                 <?php foreach ($sections as $section): ?>
-                                    <option value="<?= $section['section_id'] ?>">
+                                    <option value="<?= $section['section_id'] ?>"
+                                        <?= ($isEdit && isset($classData['section_id']) && $classData['section_id'] == $section['section_id']) ? 'selected' : '' ?>>
                                         <?= htmlspecialchars($section['level_name'] . ' - ' . $section['section_name']) ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -111,7 +137,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <select class="form-select" name="teacher_id" required>
                                 <option value="">Select Teacher</option>
                                 <?php foreach ($teachers as $teacher): ?>
-                                    <option value="<?= $teacher['user_id'] ?>">
+                                    <option value="<?= $teacher['user_id'] ?>"
+                                        <?= ($isEdit && isset($classData['teacher_id']) && $classData['teacher_id'] == $teacher['user_id']) ? 'selected' : '' ?>>
                                         <?= htmlspecialchars($teacher['first_name'] . ' ' . $teacher['last_name']) ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -121,22 +148,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="col-md-6">
                             <label class="form-label">School Year</label>
                             <input type="text" class="form-control" name="school_year" required 
-                                   placeholder="e.g. 2025-2026" value="<?= htmlspecialchars($_POST['school_year'] ?? '') ?>">
+                                   placeholder="e.g. 2025-2026" value="<?= htmlspecialchars($isEdit ? ($classData['school_year'] ?? '') : ($_POST['school_year'] ?? '')) ?>">
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label">Semester</label>
                             <select class="form-select" name="semester" required>
                                 <option value="">Select Semester</option>
-                                <option value="1st">1st Semester</option>
-                                <option value="2nd">2nd Semester</option>
-                                <option value="summer">Summer</option>
+                                <option value="1st" <?= ($isEdit && isset($classData['semester']) && $classData['semester'] == '1st') ? 'selected' : '' ?>>1st Semester</option>
+                                <option value="2nd" <?= ($isEdit && isset($classData['semester']) && $classData['semester'] == '2nd') ? 'selected' : '' ?>>2nd Semester</option>
+                                <option value="summer" <?= ($isEdit && isset($classData['semester']) && $classData['semester'] == 'summer') ? 'selected' : '' ?>>Summer</option>
                             </select>
                         </div>
                         
                         <div class="col-12">
+                            <?php if ($isEdit): ?>
+                                <input type="hidden" name="class_id" value="<?= $_GET['id'] ?>">
+                            <?php endif; ?>
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-plus-circle"></i> Add Class
+                                <i class="bi bi-<?= $isEdit ? 'check-circle' : 'plus-circle' ?>"></i> 
+                                <?= $isEdit ? 'Update' : 'Add' ?> Class
                             </button>
                         </div>
                     </div>

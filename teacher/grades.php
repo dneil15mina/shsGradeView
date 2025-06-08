@@ -91,84 +91,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Grade Management - <?= htmlspecialchars($class['subject_name']) ?></title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        .content { padding: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        input[type="number"] { width: 60px; padding: 5px; }
-        .btn { padding: 8px 15px; background: #337ab7; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        .success { color: green; margin-bottom: 15px; }
-        .error { color: red; margin-bottom: 15px; }
-    </style>
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
     <?php include 'dashboard.php'; ?>
     
-    <div class="content">
-        <h3>Grade Management: <?= htmlspecialchars($class['subject_name']) ?> (<?= htmlspecialchars($class['level_name'] ?? '') ?>-<?= htmlspecialchars($class['section_name']) ?>)</h3>
-        
-        <?php if (isset($success)): ?>
-            <div class="success"><?= $success ?></div>
-        <?php endif; ?>
-        
-        <form method="POST">
-            <?php if (!$midtermActive && !$finalsActive): ?>
-                <div class="error">Both midterm and final grade encoding periods are currently inactive.</div>
-            <?php elseif (!$midtermActive): ?>
-                <div class="error">Midterm grade encoding is currently inactive.</div>
-            <?php elseif (!$finalsActive): ?>
-                <div class="error">Final grade encoding is currently inactive.</div>
-            <?php endif; ?>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Student Name</th>
-                        <th>Midterm Grade</th>
-                        <th>Finals Grade</th>
-                        <?php if ($showComputed): ?>
-                            <th>Final Computed Grade</th>
-                        <?php endif; ?>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($students as $student): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($student['last_name'] . ', ' . $student['first_name']) ?></td>
-                            <td>
-                                <input type="number" name="midterm[<?= $student['enrollment_id'] ?>]" 
-                                       value="<?= $student['midterm_grade'] ?? '' ?>" min="0" max="100"
-                                       <?= !$midtermActive ? 'disabled' : '' ?>>
-                            </td>
-                            <td>
-                                <input type="number" name="final[<?= $student['enrollment_id'] ?>]" 
-                                       value="<?= $student['final_grade'] ?? '' ?>" min="0" max="100"
-                                       <?= !$finalsActive ? 'disabled' : '' ?>>
-                            </td>
-                            <?php if ($showComputed): ?>
-                                <td>
-                                    <?php if (isset($student['midterm_grade']) && isset($student['final_grade']) && $student['final_grade'] !== null): ?>
-                                        <?= round(($student['midterm_grade'] + $student['final_grade']) / 2) ?>
-                                    <?php endif; ?>
-                                </td>
-                            <?php endif; ?>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-            
-            <div class="d-flex gap-3 mt-3">
-                <button type="submit" class="btn btn-success px-4 py-2">
-                    <i class="bi bi-save"></i> Save Grades
-                </button>
-                <a href="classes.php" class="btn btn-secondary px-4 py-2">
-                    <i class="bi bi-arrow-left"></i> Back to Classes
-                </a>
+    <div class="container mt-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Grade Management: <?= htmlspecialchars($class['subject_name']) ?> (<?= htmlspecialchars($class['level_name'] ?? '') ?>-<?= htmlspecialchars($class['section_name']) ?>)</h4>
             </div>
-        </form>
+            <div class="card-body">
+                <?php if (isset($success)): ?>
+                    <div class="alert alert-success"><?= $success ?></div>
+                <?php endif; ?>
+                
+                <form method="POST">
+                    <?php if (!$midtermActive && !$finalsActive): ?>
+                        <div class="alert alert-danger">Both midterm and final grade encoding periods are currently inactive.</div>
+                    <?php elseif (!$midtermActive): ?>
+                        <div class="alert alert-danger">Midterm grade encoding is currently inactive.</div>
+                    <?php elseif (!$finalsActive): ?>
+                        <div class="alert alert-danger">Final grade encoding is currently inactive.</div>
+                    <?php endif; ?>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Midterm Grade</th>
+                                    <th>Finals Grade</th>
+                                    <?php if ($showComputed): ?>
+                                        <th>Final Computed Grade</th>
+                                    <?php endif; ?>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($students as $student): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($student['last_name'] . ', ' . $student['first_name']) ?></td>
+                                        <td>
+                                            <input type="number" class="form-control" style="width: 80px" 
+                                                   name="midterm[<?= $student['enrollment_id'] ?>]" 
+                                                   value="<?= $student['midterm_grade'] ?? '' ?>" min="0" max="100"
+                                                   <?= !$midtermActive ? 'disabled' : '' ?>>
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control" style="width: 80px"
+                                                   name="final[<?= $student['enrollment_id'] ?>]" 
+                                                   value="<?= $student['final_grade'] ?? '' ?>" min="0" max="100"
+                                                   <?= !$finalsActive ? 'disabled' : '' ?>>
+                                        </td>
+                                        <?php if ($showComputed): ?>
+                                            <td>
+                                                <?php if (isset($student['midterm_grade']) && isset($student['final_grade']) && $student['final_grade'] !== null): ?>
+                                                    <?= round(($student['midterm_grade'] + $student['final_grade']) / 2) ?>
+                                                <?php endif; ?>
+                                            </td>
+                                        <?php endif; ?>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="d-flex gap-3 mt-3">
+                        <button type="submit" class="btn btn-success px-4 py-2">
+                            <i class="bi bi-save"></i> Save Grades
+                        </button>
+                        <a href="classes.php" class="btn btn-secondary px-4 py-2">
+                            <i class="bi bi-arrow-left"></i> Back to Classes
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
+
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -64,9 +64,6 @@ try {
             <a href="manage_subjects.php" class="btn btn-outline-primary">
                 <i class="bi bi-book"></i> Manage Subjects
             </a>
-            <a href="add_class.php" class="btn btn-outline-primary">
-                <i class="bi bi-plus-circle"></i> Add Class
-            </a>
             <a href="dashboard.php" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Back to Dashboard
             </a>

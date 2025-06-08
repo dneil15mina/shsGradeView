@@ -42,6 +42,9 @@ if ($_SESSION['role'] !== 'admin') {
                         <a href="manage_sections.php" class="list-group-item list-group-item-action">
                             <i class="bi bi-layers"></i> Section Management
                         </a>
+                        <a href="manage_enrollments.php" class="list-group-item list-group-item-action">
+                            <i class="bi bi-person-plus"></i> Manage Enrollments
+                        </a>
                         <a href="manage_grade_levels.php" class="list-group-item list-group-item-action">
                             <i class="bi bi-sort-numeric-up"></i> Grade Level Management
                         </a>

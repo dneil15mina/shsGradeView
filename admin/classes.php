@@ -71,7 +71,7 @@ $classes = $stmt->fetchAll();
                 </div>
                 
                 <div class="mt-3">
-                    <a href="add_class.php" class="btn btn-primary">
+                    <a href="edit_class.php" class="btn btn-primary">
                         <i class="bi bi-plus-circle"></i> Add New Class
                     </a>
                 </div>

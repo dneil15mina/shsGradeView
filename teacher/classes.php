@@ -21,52 +21,59 @@ $classes = $stmt->fetchAll();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>My Classes</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        .header { background: #333; color: white; padding: 15px; }
-        .content { padding: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .btn { padding: 5px 10px; text-decoration: none; border-radius: 3px; }
-        .btn-primary { background: #337ab7; color: white; }
-    </style>
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
     <?php include 'dashboard.php'; ?>
     
-    <div class="content">
-        <h3>My Classes</h3>
-        
-        <?php if (empty($classes)): ?>
-            <p>You are not currently assigned to any classes.</p>
-        <?php else: ?>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Subject</th>
-                        <th>Section</th>
-                        <th>School Year</th>
-                        <th>Semester</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($classes as $class): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($class['subject_name']) ?></td>
-                            <td><?= htmlspecialchars($class['section_name']) ?></td>
-                            <td><?= htmlspecialchars($class['school_year']) ?></td>
-                            <td><?= htmlspecialchars(ucfirst($class['semester'])) ?></td>
-                            <td>
-                                <a href="grades.php?class_id=<?= $class['class_id'] ?>" class="btn btn-primary">View Grades</a>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        <?php endif; ?>
+    <div class="container mt-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">My Classes</h4>
+            </div>
+            <div class="card-body">
+                <?php if (empty($classes)): ?>
+                    <div class="alert alert-info">
+                        You are not currently assigned to any classes.
+                    </div>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Section</th>
+                                    <th>School Year</th>
+                                    <th>Semester</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($classes as $class): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($class['subject_name']) ?></td>
+                                        <td><?= htmlspecialchars($class['section_name']) ?></td>
+                                        <td><?= htmlspecialchars($class['school_year']) ?></td>
+                                        <td><?= htmlspecialchars(ucfirst($class['semester'])) ?></td>
+                                        <td>
+                                            <a href="grades.php?class_id=<?= $class['class_id'] ?>" 
+                                               class="btn btn-sm btn-primary">
+                                                <i class="bi bi-journal-text"></i> View Grades
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
     </div>
+
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
