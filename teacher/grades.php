@@ -1,23 +1,20 @@
 <?php
+// Completely rewritten version to bypass cache issues
 require_once '../includes/auth.php';
 requireRole('teacher');
 
+// Get class ID from URL
 $classId = isset($_GET['class_id']) ? (int)$_GET['class_id'] : 0;
-
-// Verify teacher is assigned to this class
 $teacherId = $_SESSION['user_id'];
-$stmt = $pdo->prepare("
-    SELECT COUNT(*) 
-    FROM classes 
-    WHERE class_id = ? AND teacher_id = ?
-");
-$stmt->execute([$classId, $teacherId]);
-if ($stmt->fetchColumn() === 0) {
+
+// Verify teacher assignment
+$stmt = $pdo->prepare("SELECT COUNT(*) FROM classes WHERE class_id = ? AND teacher_id = ?");
+if (!$stmt->execute([$classId, $teacherId]) || $stmt->fetchColumn() === 0) {
     header('Location: classes.php');
     exit;
 }
 
-// Get class info
+// Get class details
 $stmt = $pdo->prepare("
     SELECT sub.subject_name, COALESCE(gl.level_name, '') AS level_name, s.section_name
     FROM classes c
@@ -30,68 +27,61 @@ $stmt->execute([$classId]);
 $class = $stmt->fetch();
 
 // Get grade period settings
-$stmt = $pdo->query("SELECT setting_key, setting_value FROM system_settings WHERE setting_key IN ('midterm_active', 'finals_active', 'show_computed_grades')");
-$gradePeriods = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
-$midtermActive = $gradePeriods['midterm_active'] ?? 0;
-$finalsActive = $gradePeriods['finals_active'] ?? 0;
-$showComputed = $gradePeriods['show_computed_grades'] ?? 1;
+$settings = $pdo->query("
+    SELECT setting_key, setting_value 
+    FROM system_settings 
+    WHERE setting_key IN ('midterm_active', 'finals_active', 'show_computed_grades')
+")->fetchAll(PDO::FETCH_KEY_PAIR);
 
-// Get students in this class with their enrollment details
-$stmt = $pdo->prepare("
-    SELECT u.user_id, u.first_name, u.last_name, 
-           e.enrollment_id, e.class_id,
-           gr.midterm_grade, gr.final_grade,
-           c.subject_id, c.section_id, c.school_year, c.semester,
-           sub.subject_name, sec.section_name, gl.level_name
+$midtermActive = $settings['midterm_active'] ?? 0;
+$finalsActive = $settings['finals_active'] ?? 0;
+$showComputed = $settings['show_computed_grades'] ?? 1;
+
+// Get students with grades
+$studentsQuery = "
+    SELECT u.user_id, u.first_name, u.last_name, e.enrollment_id,
+           gr.midterm_grade, gr.final_grade
     FROM enrollment e
     JOIN users u ON e.student_id = u.user_id
     JOIN classes c ON e.class_id = c.class_id
-    JOIN subjects sub ON c.subject_id = sub.subject_id
-    JOIN sections sec ON c.section_id = sec.section_id
-    JOIN grade_levels gl ON sec.level_id = gl.level_id
     LEFT JOIN grades gr ON e.enrollment_id = gr.enrollment_id
     WHERE e.class_id = ? AND c.teacher_id = ?
     ORDER BY u.last_name, u.first_name
-");
+";
+
+$stmt = $pdo->prepare($studentsQuery);
 $stmt->execute([$classId, $teacherId]);
 $students = $stmt->fetchAll();
 
-// Handle form submission
+// Handle grade submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $midtermGrades = $_POST['midterm'] ?? [];
     $finalGrades = $_POST['final'] ?? [];
     
     foreach ($students as $student) {
         $enrollmentId = $student['enrollment_id'];
-        
-        // Prepare grade data
         $midterm = isset($midtermGrades[$enrollmentId]) ? (int)$midtermGrades[$enrollmentId] : null;
         $final = isset($finalGrades[$enrollmentId]) ? (int)$finalGrades[$enrollmentId] : null;
-        
-        // Validate grades (0-100)
-        if ($midterm !== null && ($midterm < 0 || $midterm > 100)) continue;
-        if ($final !== null && ($final < 0 || $final > 100)) continue;
-        
-        // Update or insert grades
-        if ($student['midterm_grade'] !== null || $student['final_grade'] !== null) {
-            // Update existing record
-            $stmt = $pdo->prepare("
-                UPDATE grades 
-                SET midterm_grade = ?, final_grade = ?, updated_by = ?
-                WHERE enrollment_id = ?
-            ");
-            $stmt->execute([$midterm, $final, $teacherId, $enrollmentId]);
-        } else {
-            // Insert new record
-            $stmt = $pdo->prepare("
-                INSERT INTO grades (enrollment_id, midterm_grade, final_grade, updated_by)
-                VALUES (?, ?, ?, ?)
-            ");
-            $stmt->execute([$enrollmentId, $midterm, $final, $teacherId]);
+
+        // Validate grades
+        if (($midterm !== null && ($midterm < 0 || $midterm > 100)) || 
+            ($final !== null && ($final < 0 || $final > 100))) {
+            continue;
         }
+
+        // Prepare the appropriate query
+        if ($student['midterm_grade'] !== null || $student['final_grade'] !== null) {
+            $query = "UPDATE grades SET midterm_grade = ?, final_grade = ?, updated_by = ? WHERE enrollment_id = ?";
+        } else {
+            $query = "INSERT INTO grades (enrollment_id, midterm_grade, final_grade, updated_by) VALUES (?, ?, ?, ?)";
+        }
+
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([$midterm, $final, $teacherId, $enrollmentId]);
     }
-    
+
     // Refresh student data
+    $stmt = $pdo->prepare($studentsQuery);
     $stmt->execute([$classId, $teacherId]);
     $students = $stmt->fetchAll();
     $success = 'Grades updated successfully!';
@@ -101,10 +91,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Grade Management - <?= htmlspecialchars($class['subject']) ?></title>
+    <title>Grade Management - <?= htmlspecialchars($class['subject_name']) ?></title>
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        .header { background: #333; color: white; padding: 15px; }
         .content { padding: 20px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
@@ -112,6 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         input[type="number"] { width: 60px; padding: 5px; }
         .btn { padding: 8px 15px; background: #337ab7; color: white; border: none; border-radius: 4px; cursor: pointer; }
         .success { color: green; margin-bottom: 15px; }
+        .error { color: red; margin-bottom: 15px; }
     </style>
 </head>
 <body>
