@@ -31,7 +31,7 @@ requireRole('student');
                         <a href="dashboard.php" class="list-group-item list-group-item-action active">
                             <i class="bi bi-journal-bookmark"></i> My Grades
                         </a>
-                        <a href="profile.php" class="list-group-item list-group-item-action">
+                        <a href="../profile.php" class="list-group-item list-group-item-action">
                             <i class="bi bi-person"></i> My Profile
                         </a>
                         <a href="../password_change.php" class="list-group-item list-group-item-action">

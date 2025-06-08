@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container">
         <a class="navbar-brand" href="dashboard.php">
-            <img src="../assets/images/school-logo.png" alt="School Logo" height="40">
+            <img src="/shsGradeView/assets/images/school-logo.png" alt="School Logo" height="40">
             SHS Grade View
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">

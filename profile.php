@@ -32,21 +32,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     // Process other profile updates
-    $stmt = $pdo->prepare("UPDATE users SET full_name = ?, email = ? WHERE user_id = ?");
-    $stmt->execute([
-        $_POST['full_name'],
-        $_POST['email'],
-        $_SESSION['user_id']
-    ]);
+    if ($_SESSION['role'] === 'student') {
+        $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ? WHERE user_id = ?");
+        $stmt->execute([
+            $_POST['username'],
+            $_POST['email'],
+            $_SESSION['user_id']
+        ]);
+    } else {
+        $stmt = $pdo->prepare("UPDATE users SET username = ?, first_name = ?, last_name = ?, email = ? WHERE user_id = ?");
+        $stmt->execute([
+            $_POST['username'],
+            $_POST['first_name'],
+            $_POST['last_name'],
+            $_POST['email'],
+            $_SESSION['user_id']
+        ]);
+    }
     $_SESSION['success'] = "Profile updated successfully!";
     header("Location: profile.php");
     exit;
 }
 
-// Get current user data
-$stmt = $pdo->prepare("SELECT username, full_name, email, profile_photo FROM users WHERE user_id = ?");
-$stmt->execute([$_SESSION['user_id']]);
-$user = $stmt->fetch();
+    // Get current user data
+    $stmt = $pdo->prepare("SELECT username, first_name, last_name, email, profile_photo FROM users WHERE user_id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    $user = $stmt->fetch();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -78,12 +89,6 @@ $user = $stmt->fetch();
                         <img src="<?= $user['profile_photo'] ?? 'assets/images/default-avatar.jpg' ?>" 
                              class="profile-photo mb-3" 
                              alt="Profile Photo">
-                        <form method="post" enctype="multipart/form-data">
-                            <input type="file" name="profile_photo" id="profile_photo" class="d-none" 
-                                   accept="image/jpeg, image/png">
-                            <label for="profile_photo" class="btn btn-primary upload-btn">
-                                Change Photo
-                            </label>
                     </div>
                 </div>
             </div>
@@ -93,6 +98,12 @@ $user = $stmt->fetch();
                         <h4>Profile Information</h4>
                     </div>
                     <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            <input type="file" name="profile_photo" id="profile_photo" class="d-none" 
+                                   accept="image/jpeg, image/png">
+                            <label for="profile_photo" class="btn btn-primary upload-btn">
+                                Change Photo
+                            </label>
                         <?php if (isset($_SESSION['success'])): ?>
                             <div class="alert alert-success"><?= $_SESSION['success'] ?></div>
                             <?php unset($_SESSION['success']); ?>
@@ -104,19 +115,32 @@ $user = $stmt->fetch();
                         
                         <div class="form-group mb-3">
                             <label>Username</label>
-                            <input type="text" class="form-control" value="<?= htmlspecialchars($user['username']) ?>" readonly>
+                            <input type="text" class="form-control" name="username" 
+                                   value="<?= htmlspecialchars($user['username']) ?>">
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="first_name">First Name</label>
+                            <input type="text" class="form-control" name="first_name" id="first_name" 
+                                   value="<?= htmlspecialchars($user['first_name'] ?? '') ?>"
+                                   <?= $_SESSION['role'] === 'student' ? 'readonly' : '' ?>>
                         </div>
                         
                         <div class="form-group mb-3">
-                            <label for="full_name">Full Name</label>
-                            <input type="text" class="form-control" name="full_name" id="full_name" 
-                                   value="<?= htmlspecialchars($user['full_name'] ?? '') ?>">
+                            <label for="last_name">Last Name</label>
+                            <input type="text" class="form-control" name="last_name" id="last_name" 
+                                   value="<?= htmlspecialchars($user['last_name'] ?? '') ?>"
+                                   <?= $_SESSION['role'] === 'student' ? 'readonly' : '' ?>>
                         </div>
                         
                         <div class="form-group mb-3">
                             <label for="email">Email</label>
                             <input type="email" class="form-control" name="email" id="email" 
                                    value="<?= htmlspecialchars($user['email'] ?? '') ?>">
+                        </div>
+
+                        <div class="mb-3">
+                            <a href="password_change.php" class="btn btn-secondary">Change Password</a>
                         </div>
                         
                         <button type="submit" class="btn btn-primary">Save Changes</button>

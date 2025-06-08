@@ -29,6 +29,9 @@ requireRole('teacher');
                         <a href="grades.php" class="list-group-item list-group-item-action">
                             <i class="bi bi-pencil-square"></i> Enter Grades
                         </a>
+                        <a href="profile.php" class="list-group-item list-group-item-action">
+                            <i class="bi bi-person"></i> My Profile
+                        </a>
                         <a href="../password_change.php" class="list-group-item list-group-item-action">
                             <i class="bi bi-shield-lock"></i> Change Password
                         </a>
