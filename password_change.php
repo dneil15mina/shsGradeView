@@ -40,13 +40,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-    <div class="container">
-        <div class="row justify-content-center align-items-center min-vh-100">
-            <div class="col-md-6 col-lg-4">
-                <div class="text-center mb-4">
-                    <img src="assets/images/school-logo.png" alt="School Logo" height="60" class="mb-2">
-                    <h4>Change Password</h4>
-                </div>
+    <?php include 'includes/navbar.php'; ?>
+    
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Change Password</h4>
+                    </div>
                 <div class="card shadow">
                     <div class="card-body p-4">
                         <?php if ($error): ?>
@@ -69,9 +71,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <label for="confirm_password" class="form-label">Confirm New Password</label>
                                 <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="bi bi-shield-lock"></i> Change Password
-                            </button>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-shield-lock"></i> Change Password
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>

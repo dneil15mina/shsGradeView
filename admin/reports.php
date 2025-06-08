@@ -10,46 +10,56 @@ $schoolYears = $pdo->query("SELECT DISTINCT school_year FROM classes ORDER BY sc
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Grade Reports</title>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        .report-form { margin-bottom: 20px; padding: 15px; background: #f5f5f5; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; }
-        th { background-color: #f2f2f2; }
-        .btn { padding: 5px 10px; text-decoration: none; }
-        .btn-primary { background: #337ab7; color: white; }
-    </style>
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
     <?php include 'dashboard.php'; ?>
     
-    <div class="content">
-        <h3>Grade Reports</h3>
-        
-        <div class="report-form">
-            <form method="GET" action="generate_report.php">
-                <label>School Year:
-                    <select name="school_year" required>
-                        <?php foreach ($schoolYears as $year): ?>
-                            <option value="<?= $year['school_year'] ?>">
-                                <?= htmlspecialchars($year['school_year']) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </label>
-                
-                <label>Report Type:
-                    <select name="report_type" required>
-                        <option value="summary">Summary Report</option>
-                        <option value="detailed">Detailed Report</option>
-                        <option value="teacher">Teacher Performance</option>
-                    </select>
-                </label>
-                
-                <button type="submit" class="btn btn-primary">Generate Report</button>
-            </form>
+    <div class="container mt-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Grade Reports</h4>
+            </div>
+            <div class="card-body">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Generate Report</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="GET" action="generate_report.php" class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">School Year</label>
+                                <select class="form-select" name="school_year" required>
+                                    <?php foreach ($schoolYears as $year): ?>
+                                        <option value="<?= $year['school_year'] ?>">
+                                            <?= htmlspecialchars($year['school_year']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Report Type</label>
+                                <select class="form-select" name="report_type" required>
+                                    <option value="summary">Summary Report</option>
+                                    <option value="detailed">Detailed Report</option>
+                                    <option value="teacher">Teacher Performance</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-file-earmark-text"></i> Generate Report
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

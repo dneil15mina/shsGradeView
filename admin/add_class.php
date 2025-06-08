@@ -54,91 +54,97 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Add New Class</title>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        .container { max-width: 800px; margin: 20px auto; padding: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; }
-        select, input { width: 100%; padding: 8px; }
-        .error { color: red; margin-bottom: 15px; }
-        .success { color: green; margin-bottom: 15px; }
-        .btn { background: #337ab7; color: white; border: none; padding: 10px 15px; cursor: pointer; }
-    </style>
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
     <?php include 'dashboard.php'; ?>
     
-    <div class="container">
-        <h2>Add New Class</h2>
-        
-        <?php if (!empty($errors)): ?>
-            <div class="error">
-                <?php foreach ($errors as $error): ?>
-                    <p><?= htmlspecialchars($error) ?></p>
-                <?php endforeach; ?>
+    <div class="container mt-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Add New Class</h4>
             </div>
-        <?php endif; ?>
-        
-        <?php if ($success): ?>
-            <div class="success"><?= htmlspecialchars($success) ?></div>
-        <?php endif; ?>
-        
-        <form method="POST">
-            <div class="form-group">
-                <label>Subject</label>
-                <select name="subject_id" required>
-                    <option value="">Select Subject</option>
-                    <?php foreach ($subjects as $subject): ?>
-                        <option value="<?= $subject['subject_id'] ?>">
-                            <?= htmlspecialchars($subject['subject_name']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>Section</label>
-                <select name="section_id" required>
-                    <option value="">Select Section</option>
-                    <?php foreach ($sections as $section): ?>
-                        <option value="<?= $section['section_id'] ?>">
-                            <?= htmlspecialchars($section['level_name'] . ' - ' . $section['section_name']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>Teacher</label>
-                <select name="teacher_id" required>
-                    <option value="">Select Teacher</option>
-                    <?php foreach ($teachers as $teacher): ?>
-                        <option value="<?= $teacher['user_id'] ?>">
-                            <?= htmlspecialchars($teacher['first_name'] . ' ' . $teacher['last_name']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>School Year</label>
-                <input type="text" name="school_year" required 
-                       placeholder="e.g. 2025-2026" value="<?= htmlspecialchars($_POST['school_year'] ?? '') ?>">
-            </div>
+            <div class="card-body">
+                <?php if (!empty($errors)): ?>
+                    <div class="alert alert-danger">
+                        <?php foreach ($errors as $error): ?>
+                            <p class="mb-1"><?= htmlspecialchars($error) ?></p>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+                
+                <?php if ($success): ?>
+                    <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
+                <?php endif; ?>
 
-            <div class="form-group">
-                <label>Semester</label>
-                <select name="semester" required>
-                    <option value="">Select Semester</option>
-                    <option value="1st">1st Semester</option>
-                    <option value="2nd">2nd Semester</option>
-                    <option value="summer">Summer</option>
-                </select>
+                <form method="POST" class="needs-validation" novalidate>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Subject</label>
+                            <select class="form-select" name="subject_id" required>
+                                <option value="">Select Subject</option>
+                                <?php foreach ($subjects as $subject): ?>
+                                    <option value="<?= $subject['subject_id'] ?>">
+                                        <?= htmlspecialchars($subject['subject_name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label">Section</label>
+                            <select class="form-select" name="section_id" required>
+                                <option value="">Select Section</option>
+                                <?php foreach ($sections as $section): ?>
+                                    <option value="<?= $section['section_id'] ?>">
+                                        <?= htmlspecialchars($section['level_name'] . ' - ' . $section['section_name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label">Teacher</label>
+                            <select class="form-select" name="teacher_id" required>
+                                <option value="">Select Teacher</option>
+                                <?php foreach ($teachers as $teacher): ?>
+                                    <option value="<?= $teacher['user_id'] ?>">
+                                        <?= htmlspecialchars($teacher['first_name'] . ' ' . $teacher['last_name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label">School Year</label>
+                            <input type="text" class="form-control" name="school_year" required 
+                                   placeholder="e.g. 2025-2026" value="<?= htmlspecialchars($_POST['school_year'] ?? '') ?>">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Semester</label>
+                            <select class="form-select" name="semester" required>
+                                <option value="">Select Semester</option>
+                                <option value="1st">1st Semester</option>
+                                <option value="2nd">2nd Semester</option>
+                                <option value="summer">Summer</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-plus-circle"></i> Add Class
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
-            
-            <button type="submit" class="btn">Add Class</button>
-        </form>
+        </div>
     </div>
+
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

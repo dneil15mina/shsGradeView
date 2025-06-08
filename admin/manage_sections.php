@@ -50,85 +50,103 @@ $sections = $pdo->query("
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Manage Sections</title>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        .container { max-width: 800px; margin: 20px auto; padding: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; }
-        select, input { width: 100%; padding: 8px; }
-        .error { color: red; margin-bottom: 15px; }
-        .success { color: green; margin-bottom: 15px; }
-        .btn { background: #337ab7; color: white; border: none; padding: 8px 15px; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
-    </style>
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
     <?php include 'dashboard.php'; ?>
     
-    <div class="container">
-        <h2>Manage Sections</h2>
-        
-        <?php if (!empty($errors)): ?>
-            <div class="error">
-                <?php foreach ($errors as $error): ?>
-                    <p><?= htmlspecialchars($error) ?></p>
-                <?php endforeach; ?>
+    <div class="container mt-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Manage Sections</h4>
             </div>
-        <?php endif; ?>
-        
-        <?php if ($success): ?>
-            <div class="success"><?= htmlspecialchars($success) ?></div>
-        <?php endif; ?>
+            <div class="card-body">
+                <?php if (!empty($errors)): ?>
+                    <div class="alert alert-danger">
+                        <?php foreach ($errors as $error): ?>
+                            <p class="mb-1"><?= htmlspecialchars($error) ?></p>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+                
+                <?php if ($success): ?>
+                    <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
+                <?php endif; ?>
 
-        <h3>Add New Section</h3>
-        <form method="POST">
-            <div class="form-group">
-                <label>Grade Level</label>
-                <select name="level_id" required>
-                    <option value="">Select Grade Level</option>
-                    <?php foreach ($levels as $level): ?>
-                        <option value="<?= $level['level_id'] ?>">
-                            <?= htmlspecialchars($level['level_name']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Section Name</label>
-                <input type="text" name="section_name" required placeholder="e.g. Section A">
-            </div>
-            <button type="submit" name="add_section" class="btn">Add Section</button>
-        </form>
-
-        <h3>Existing Sections</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Grade Level</th>
-                    <th>Section Name</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($sections as $section): ?>
-                <tr>
-                    <td><?= htmlspecialchars($section['level_name']) ?></td>
-                    <td><?= htmlspecialchars($section['section_name']) ?></td>
-                    <td>
-                        <form method="POST" style="display:inline;">
-                            <input type="hidden" name="section_id" value="<?= $section['section_id'] ?>">
-                            <button type="submit" name="delete_section" class="btn" 
-                                    onclick="return confirm('Are you sure? This will remove all class assignments for this section!')">
-                                Delete
-                            </button>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Add New Section</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" class="needs-validation" novalidate>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Grade Level</label>
+                                    <select class="form-select" name="level_id" required>
+                                        <option value="">Select Grade Level</option>
+                                        <?php foreach ($levels as $level): ?>
+                                            <option value="<?= $level['level_id'] ?>">
+                                                <?= htmlspecialchars($level['level_name']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Section Name</label>
+                                    <input type="text" class="form-control" name="section_name" required placeholder="e.g. Section A">
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" name="add_section" class="btn btn-primary">
+                                        <i class="bi bi-plus-circle"></i> Add Section
+                                    </button>
+                                </div>
+                            </div>
                         </form>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Existing Sections</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Grade Level</th>
+                                        <th>Section Name</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($sections as $section): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($section['level_name']) ?></td>
+                                        <td><?= htmlspecialchars($section['section_name']) ?></td>
+                                        <td>
+                                            <form method="POST" class="d-inline">
+                                                <input type="hidden" name="section_id" value="<?= $section['section_id'] ?>">
+                                                <button type="submit" name="delete_section" class="btn btn-sm btn-danger" 
+                                                        onclick="return confirm('Are you sure? This will remove all class assignments for this section!')">
+                                                    <i class="bi bi-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
