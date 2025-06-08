@@ -49,78 +49,92 @@ $subjects = $pdo->query("SELECT * FROM subjects ORDER BY subject_name")->fetchAl
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Manage Subjects</title>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        .container { max-width: 800px; margin: 20px auto; padding: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 8px; }
-        .error { color: red; margin-bottom: 15px; }
-        .success { color: green; margin-bottom: 15px; }
-        .btn { background: #337ab7; color: white; border: none; padding: 8px 15px; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
-    </style>
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
     <?php include 'dashboard.php'; ?>
     
-    <div class="container">
-        <h2>Manage Subjects</h2>
-        
-        <?php if (!empty($errors)): ?>
-            <div class="error">
-                <?php foreach ($errors as $error): ?>
-                    <p><?= htmlspecialchars($error) ?></p>
-                <?php endforeach; ?>
+    <div class="container mt-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Manage Subjects</h4>
             </div>
-        <?php endif; ?>
-        
-        <?php if ($success): ?>
-            <div class="success"><?= htmlspecialchars($success) ?></div>
-        <?php endif; ?>
+            <div class="card-body">
+                <?php if (!empty($errors)): ?>
+                    <div class="alert alert-danger">
+                        <?php foreach ($errors as $error): ?>
+                            <p class="mb-1"><?= htmlspecialchars($error) ?></p>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+                
+                <?php if ($success): ?>
+                    <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
+                <?php endif; ?>
 
-        <h3>Add New Subject</h3>
-        <form method="POST">
-            <div class="form-group">
-                <label>Subject Name</label>
-                <input type="text" name="subject_name" required>
-            </div>
-            <div class="form-group">
-                <label>Subject Code</label>
-                <input type="text" name="subject_code" required placeholder="e.g. MATH101">
-            </div>
-            <button type="submit" name="add_subject" class="btn">Add Subject</button>
-        </form>
-
-        <h3>Existing Subjects</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Subject Name</th>
-                    <th>Subject Code</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($subjects as $subject): ?>
-                <tr>
-                    <td><?= htmlspecialchars($subject['subject_name']) ?></td>
-                    <td><?= htmlspecialchars($subject['subject_code']) ?></td>
-                    <td>
-                        <form method="POST" style="display:inline;">
-                            <input type="hidden" name="subject_id" value="<?= $subject['subject_id'] ?>">
-                            <button type="submit" name="delete_subject" class="btn" 
-                                    onclick="return confirm('Are you sure you want to delete this subject?')">
-                                Delete
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Add New Subject</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" class="needs-validation" novalidate>
+                            <div class="mb-3">
+                                <label class="form-label">Subject Name</label>
+                                <input type="text" class="form-control" name="subject_name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Subject Code</label>
+                                <input type="text" class="form-control" name="subject_code" required placeholder="e.g. MATH101">
+                            </div>
+                            <button type="submit" name="add_subject" class="btn btn-primary">
+                                <i class="bi bi-plus-circle"></i> Add Subject
                             </button>
                         </form>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Existing Subjects</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Subject Name</th>
+                                        <th>Subject Code</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($subjects as $subject): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($subject['subject_name']) ?></td>
+                                        <td><?= htmlspecialchars($subject['subject_code']) ?></td>
+                                        <td>
+                                            <form method="POST" class="d-inline">
+                                                <input type="hidden" name="subject_id" value="<?= $subject['subject_id'] ?>">
+                                                <button type="submit" name="delete_subject" class="btn btn-sm btn-danger" 
+                                                        onclick="return confirm('Are you sure you want to delete this subject?')">
+                                                    <i class="bi bi-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -22,52 +22,63 @@ $classes = $stmt->fetchAll();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Manage Classes</title>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 8px; }
-        th { background-color: #f2f2f2; }
-        .btn { padding: 5px 10px; text-decoration: none; }
-        .btn-primary { background: #337ab7; color: white; }
-    </style>
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
     <?php include 'dashboard.php'; ?>
     
-    <div class="content">
-        <h3>Manage Classes</h3>
-        
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Subject</th>
-                    <th>Teacher</th>
-                    <th>Class</th>
-                    <th>School Year</th>
-                    <th>Semester</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($classes as $class): ?>
-                <tr>
-                    <td><?= $class['class_id'] ?></td>
-                    <td><?= htmlspecialchars($class['subject_name']) ?></td>
-                    <td><?= htmlspecialchars($class['teacher_name']) ?></td>
-                    <td><?= htmlspecialchars($class['class_info']) ?></td>
-                    <td><?= htmlspecialchars($class['school_year']) ?></td>
-                    <td><?= htmlspecialchars(ucfirst($class['semester'])) ?></td>
-                    <td>
-                        <a href="edit_class.php?id=<?= $class['class_id'] ?>" class="btn btn-primary">Edit</a>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-        
-        <a href="add_class.php" class="btn btn-primary">Add New Class</a>
+    <div class="container mt-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Manage Classes</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Subject</th>
+                                <th>Teacher</th>
+                                <th>Class</th>
+                                <th>School Year</th>
+                                <th>Semester</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($classes as $class): ?>
+                            <tr>
+                                <td><?= $class['class_id'] ?></td>
+                                <td><?= htmlspecialchars($class['subject_name']) ?></td>
+                                <td><?= htmlspecialchars($class['teacher_name']) ?></td>
+                                <td><?= htmlspecialchars($class['class_info']) ?></td>
+                                <td><?= htmlspecialchars($class['school_year']) ?></td>
+                                <td><?= htmlspecialchars(ucfirst($class['semester'])) ?></td>
+                                <td>
+                                    <a href="edit_class.php?id=<?= $class['class_id'] ?>" 
+                                       class="btn btn-sm btn-primary">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </a>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-3">
+                    <a href="add_class.php" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Add New Class
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
