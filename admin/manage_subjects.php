@@ -29,32 +29,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     } elseif (isset($_POST['delete_subject'])) {
-        // Delete subject with all related data
+        // Delete subject
         $subjectId = $_POST['subject_id'] ?? 0;
         try {
-            $pdo->beginTransaction();
+            // First check if there are classes using this subject
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM classes WHERE subject_id = ?");
+            $stmt->execute([$subjectId]);
+            $classCount = $stmt->fetchColumn();
             
-            // First delete all grades for classes of this subject
-            $pdo->prepare("DELETE g FROM grades g
-                          JOIN enrollment e ON g.enrollment_id = e.enrollment_id
-                          JOIN classes c ON e.class_id = c.class_id
-                          WHERE c.subject_id = ?")->execute([$subjectId]);
-            
-            // Then delete all enrollments for those classes
-            $pdo->prepare("DELETE e FROM enrollment e
-                          JOIN classes c ON e.class_id = c.class_id
-                          WHERE c.subject_id = ?")->execute([$subjectId]);
-            
-            // Then delete all classes for this subject
-            $pdo->prepare("DELETE FROM classes WHERE subject_id = ?")->execute([$subjectId]);
-            
-            // Finally delete the subject itself
-            $pdo->prepare("DELETE FROM subjects WHERE subject_id = ?")->execute([$subjectId]);
-            
-            $pdo->commit();
-            $success = 'Subject and all related data deleted successfully!';
+            if ($classCount > 0) {
+                $errors[] = 'Cannot delete subject - there are classes assigned to it. Please delete or reassign those classes first.';
+            } else {
+                $stmt = $pdo->prepare("DELETE FROM subjects WHERE subject_id = ?");
+                $stmt->execute([$subjectId]);
+                $success = 'Subject deleted successfully!';
+            }
         } catch (PDOException $e) {
-            $pdo->rollBack();
             $errors[] = 'Failed to delete subject: ' . $e->getMessage();
         }
     }
