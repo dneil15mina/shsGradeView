@@ -32,9 +32,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Delete subject
         $subjectId = $_POST['subject_id'] ?? 0;
         try {
-            $stmt = $pdo->prepare("DELETE FROM subjects WHERE subject_id = ?");
+            // First check if there are classes using this subject
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM classes WHERE subject_id = ?");
             $stmt->execute([$subjectId]);
-            $success = 'Subject deleted successfully!';
+            $classCount = $stmt->fetchColumn();
+            
+            if ($classCount > 0) {
+                $errors[] = 'Cannot delete subject - there are classes assigned to it. Please delete or reassign those classes first.';
+            } else {
+                $stmt = $pdo->prepare("DELETE FROM subjects WHERE subject_id = ?");
+                $stmt->execute([$subjectId]);
+                $success = 'Subject deleted successfully!';
+            }
         } catch (PDOException $e) {
             $errors[] = 'Failed to delete subject: ' . $e->getMessage();
         }
